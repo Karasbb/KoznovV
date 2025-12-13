@@ -52,6 +52,16 @@ uv run eda-cli report data/example.csv --out-dir reports
 - `missing_matrix.png` – визуализация пропусков;
 - `correlation_heatmap.png` – тепловая карта корреляций.
 
+## Доступные команды
+- uv run eda-cli overview data/example.csv  # Краткий обзор
+- uv run eda-cli report data/example.csv --out-dir reports  # Полный отчёт
+
+Новые параметры для report:
+--top-k-categories N: Количество топ-значений для категорий (по умолчанию 5)
+--title "Текст": Заголовок отчёта (по умолчанию "EDA Report")
+
+Пример: uv run eda-cli report data/example.csv --out-dir reports --top-k-categories 3 --title "Анализ Данных"
+
 ## Тесты
 
 ```bash
