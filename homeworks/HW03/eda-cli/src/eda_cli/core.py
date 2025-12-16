@@ -180,35 +180,22 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     flags: Dict[str, Any] = {}
     flags["too_few_rows"] = summary.n_rows < 100
     flags["too_many_columns"] = summary.n_cols > 100
+
     max_missing_share = float(missing_df["missing_share"].max()) if not missing_df.empty else 0.0
     flags["max_missing_share"] = max_missing_share
     flags["too_many_missing"] = max_missing_share > 0.5
-    
-    # Проверка на константные колонки (все значения одинаковые)
-    constant_cols = [col.name for col in summary.columns if col.unique <= 1]
-    flags["has_constant_columns"] = len(constant_cols) > 0
-    
-    # Проверка на категориальные колонки с высокой кардинальностью (много уникальных значений)
-    cat_cols = [col.name for col in summary.columns if not col.is_numeric]  # Нечисловые колонки
-    high_card = [col for col in cat_cols if next(c.unique for c in summary.columns if c.name == col) / summary.n_rows > 0.5]
-    flags["has_high_cardinality_categoricals"] = len(high_card) > 0
-    
-        # Простейший «скор» качества
+
+    # Простейший «скор» качества
     score = 1.0
-    score -= max_missing_share # чем больше пропусков, тем хуже
+    score -= max_missing_share  # чем больше пропусков, тем хуже
     if summary.n_rows < 100:
         score -= 0.2
     if summary.n_cols > 100:
         score -= 0.1
-    
-    # Учет новых эвристик в score (минус за проблемы)
-    if flags["has_constant_columns"]:
-        score -= 0.1  # Минус за константные колонки
-    if flags["has_high_cardinality_categoricals"]:
-        score -= 0.15  # Минус за высокую кардинальность
-    
+
     score = max(0.0, min(1.0, score))
     flags["quality_score"] = score
+
     return flags
 
 
