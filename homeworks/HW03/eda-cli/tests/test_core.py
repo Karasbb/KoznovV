@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 import pandas as pd
 
 from eda_cli.core import (
@@ -59,3 +60,10 @@ def test_correlation_and_top_categories():
     city_table = top_cats["city"]
     assert "value" in city_table.columns
     assert len(city_table) <= 2
+def test_has_constant_columns():
+    data = {'const': [1,1,1], 'var': [1,2,3]}
+    df = pd.DataFrame(data)
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags = compute_quality_flags(summary, missing_df)
+    assert flags['has_constant_columns'] == True
